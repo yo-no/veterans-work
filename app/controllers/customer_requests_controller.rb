@@ -40,6 +40,7 @@ class CustomerRequestsController < ApplicationController
 
   def show
     @request = CustomerRequest.find(params[:id])
+
   end
 
   def edit
@@ -89,7 +90,6 @@ class CustomerRequestsController < ApplicationController
 
   def has_quote?
     @customer_request = CustomerRequest.find(params[:id])
-
     if @customer_request.quotes.any?
       redirect_to :customer_request, notice: "You cannot edit a request once a quote has been made."
     end
