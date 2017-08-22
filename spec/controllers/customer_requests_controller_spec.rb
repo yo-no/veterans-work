@@ -20,9 +20,12 @@
 #
 #  index_customer_requests_on_expires_date  (expires_date)
 #
+require 'rails_helper'
+
 
 RSpec.describe CustomerRequestsController, type: :controller do
   describe 'GET #index' do
+
     context 'company signed in' do
 
       before :each do
@@ -69,7 +72,6 @@ RSpec.describe CustomerRequestsController, type: :controller do
           service_category_id: service_category.id,
           expires_date: Date.today - 2
         )
-
 
         get :index
         expect(assigns(:requests)).to match_array([customer_request_1])
@@ -170,9 +172,9 @@ RSpec.describe CustomerRequestsController, type: :controller do
   end
 
   describe 'GET #show' do
-
     before :each do
       @customer_request = create(:customer_request)
+      allow_any_instance_of
     end
 
     context 'company signed in' do
@@ -228,25 +230,27 @@ RSpec.describe CustomerRequestsController, type: :controller do
   end
 
   describe 'PATCH #update' do
-    it 'update the values of the customer_request' do
+    it 'updates the values of the customer_request' do
+      customer = create :customer
+      sign_in customer
+      allow(controller).to receive(:authenticate_customer!).and_return(true)
+      allow(controller).to receive(:has_quote?).and_return(false)
       customer_request = create(:customer_request,
         city: "old city",
-        description: "old description"
+        description: "old description",
+        customer_id: customer.id
       )
-      customer = create(:customer)
-      sign_in customer
+
       patch :update, params: {
         id: customer_request.id,
-        city: "new city",
-        description: "new description"
+        customer_request: {
+          city: "new city",
+          description: "new description"
+        }
       }
       customer_request.reload
       expect(customer_request.city).to eq("new city")
-      expect(customer_request.description).to eq("old city")
+      expect(customer_request.description).to eq("new description")
     end
-
-    # context 'with params[:status] && current_admin' do
-
-    # end
   end
 end

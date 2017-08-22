@@ -47,6 +47,7 @@ class CustomerRequestsController < ApplicationController
   end
 
   def update
+    p params
     @categories = ServiceCategory.all
     if @customer_request.update(customer_request_params)
       flash[:success] = "Request Succesfully Updated!"
@@ -89,7 +90,7 @@ class CustomerRequestsController < ApplicationController
   def has_quote?
     @customer_request = CustomerRequest.find(params[:id])
 
-    if (@customer_request.quotes.length > 0)
+    if @customer_request.quotes.any?
       redirect_to :customer_request, notice: "You cannot edit a request once a quote has been made."
     end
   end
